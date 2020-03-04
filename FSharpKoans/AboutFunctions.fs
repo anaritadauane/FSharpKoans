@@ -204,10 +204,10 @@ module ``03: Putting the Function into Functional Programming`` =
     let ``23 |>, the 'pipe' operator`` () =
         let add5 a = a + 5
         let double a = a * 2
-        3 |> add5 |> double |> should equal __  // <-- start with three, add 5, then double. Readable, isn't it?
-        3 |> double |> add5 |> should equal __
-        6 |> add5 |> add5 |> should equal __
-        8 |> double |> double |> add5 |> should equal __
+        3 |> add5 |> double |> should equal 16  // <-- start with three, add 5, then double. Readable, isn't it?
+        3 |> double |> add5 |> should equal 11
+        6 |> add5 |> add5 |> should equal 16
+        8 |> double |> double |> add5 |> should equal 37
 
     (*
         The pipe operator takes:
@@ -224,9 +224,9 @@ module ``03: Putting the Function into Functional Programming`` =
     let ``24 The output type of one pipe must be the input type to the next`` () =
         let a x = x * 2.5
         let b x = x = 7.5
-        a |> should be ofType<FILL_ME_IN>
-        b |> should be ofType<FILL_ME_IN>
-        __ |> __ |> __ |> should equal true
+        a |> should be ofType<int32>
+        b |> should be ofType<float>
+        1.9 |> a |> b |> should equal true
 
     (*
         The backwards-pipe operator takes:
