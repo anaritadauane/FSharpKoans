@@ -65,7 +65,10 @@ module ``04: Match expressions`` =
     [<Test>]
     let ``05 Using a mapping function`` () =
         let mapper = function
-            | _ -> "Bingo" // write the cases for this function!
+            | 3 -> "Joey" // write the cases for this function!
+            | 8 -> "Bingo"
+            | 11 -> "Kelvin"
+            | _ -> "Kelvin"
         mapper 3 |> should equal "Joey"
         mapper 8 |> should equal "Bingo"
         mapper 11 |> should equal "Kelvin"
@@ -99,7 +102,7 @@ module ``04: Match expressions`` =
         let f input =
             match input with
             | 0,0 -> "Both 0"
-            | 3,0 | 0,4 -> sprintf "One 0, one %d" __
+            | v,0 | 0,v -> sprintf "One 0, one %d" v
             | _ -> "No 0"
         f (3,0) |> should equal "One 0, one 3"
         f (0, 4) |> should equal "One 0, one 4"
