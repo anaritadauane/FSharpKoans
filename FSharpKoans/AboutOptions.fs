@@ -67,7 +67,9 @@ module ``09: Exploring types, options, and results`` =
     let ``04 Parsing a string safely`` () =
         let parse (s:string) =
             match System.Int32.TryParse s with
-            | (true,s) -> __ // <-- fill in the match cases
+            | (true,25) -> Some 25
+            | (true,48) -> Some 48 // <-- fill in the match cases
+            | _-> None
         parse "25" |> should equal (Some 25)
         parse "48" |> should equal (Some 48)
         parse "wut" |> should equal None

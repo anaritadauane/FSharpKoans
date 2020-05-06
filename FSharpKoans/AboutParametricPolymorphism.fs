@@ -97,18 +97,18 @@ module ``08: Parametric polymorphism`` =
         a |> should be ofType<GenericDiscriminatedUnionExample<double,int>>
         b |> should be ofType<GenericDiscriminatedUnionExample<'a,bool>>
 
-    type MyDiscriminatedUnion =
-    | Furoth of int 
+    type MyDiscriminatedUnion<'a,'b> =
+    | Furoth of 'a 
     | Fevi
-    | Sxi of string
+    | Sxi of 'b
 
     [<Test>]
     let ``05 Creating a generic discriminated union (Part 2).`` () =
         // You need to edit the definition of MyDiscriminatedUnion first!  It's just above this test.
         let a = Furoth 7
         let b = Sxi "bleh"
-        let c = Furoth 7
-        let d = Sxi "spider"
+        let c = Furoth 't'
+        let d = Sxi true
         match a with
         | Furoth n -> n |> should equal 7
         | _ -> Assert.Fail ()

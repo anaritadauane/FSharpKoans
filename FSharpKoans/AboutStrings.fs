@@ -88,7 +88,7 @@ module ``11: String manipulation`` =
    // double-up a % to get a % in.
     [<Test>]
     let ``13 String formatting: Putting a '%' sign in`` () =
-        let result = sprintf __ 94.43
+        let result = sprintf "I scored %.2f%% on the test" 94.43
         result |> should equal "I scored 94.43% on the test"
 
     [<Test>]
