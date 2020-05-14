@@ -310,7 +310,7 @@ or something else), it's likely that you'll be able to use a fold.
     [<Test>]
     let ``20 init: creating a list based on a size and a function`` () =
         let init (n : int) (f : int -> 'a) : 'a list =
-            __// Does this: https://msdn.microsoft.com/en-us/library/ee370497.aspx
+               let rec in // Does this: https://msdn.microsoft.com/en-us/library/ee370497.aspx
         init 10 (fun x -> x*2) |> should equal [0;2;4;6;8;10;12;14;16;18]
         init 4 (sprintf "(%d)") |> should equal ["(0)";"(1)";"(2)";"(3)"]
 
@@ -318,7 +318,13 @@ or something else), it's likely that you'll be able to use a fold.
     [<Test>]
     let ``21 tryFind: find the first matching element, if any`` () =
         let tryFind (p : 'a -> bool) (xs : 'a list) : 'a option =
-            __ // Does this: https://msdn.microsoft.com/en-us/library/ee353506.aspx
+             let rec innerF xs out =
+                match xs with
+                | [] -> None
+                | i ::rest -> match p i with 
+                              | true ->  Some i
+                              | false -> innerF rest out
+             innerF xs [] // Does this: https://msdn.microsoft.com/en-us/library/ee353506.aspx
         tryFind (fun x -> x<=45) [100;85;25;55;6] |> should equal (Some 25)
         tryFind (fun x -> x>450) [100;85;25;55;6] |> should equal None
 
@@ -326,7 +332,13 @@ or something else), it's likely that you'll be able to use a fold.
     [<Test>]
     let ``22 tryPick: find the first matching element, if any, and transform it`` () =
         let tryPick (p : 'a -> 'b option) (xs : 'a list) : 'b option =
-            __ // Does this: https://msdn.microsoft.com/en-us/library/ee353814.aspx
+                 let rec innerF xs out =
+                    match xs with
+                    | [] -> None
+                    | i ::rest -> match p i with 
+                                  | Some i ->  Some i
+                                  | None -> innerF rest out
+                 innerF xs [] // Does this: https://msdn.microsoft.com/en-us/library/ee353814.aspx
         let f x =
             match x<=45 with
             | true -> Some(x*2)
@@ -356,7 +368,13 @@ or something else), it's likely that you'll be able to use a fold.
         // - why can't it take an 'a->'b, instead of an 'a->'b option ?
         // - why does it return a 'b list, and not a 'b list option ?
         let choose (p : 'a -> 'b option) (xs : 'a list) : 'b list =
-            __ // Does this: https://msdn.microsoft.com/en-us/library/ee353456.aspx
+            let rec innerF xs out =
+                match xs with
+                | [] -> out
+                | i ::rest -> match p i with 
+                              | Some i ->  i :: innerF rest out 
+                              | None -> innerF rest out 
+            innerF xs [] // Does this: https://msdn.microsoft.com/en-us/library/ee353456.aspx
         let f x =
             match x<=45 with
             | true -> Some(x*2)
