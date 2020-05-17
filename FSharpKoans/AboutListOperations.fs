@@ -106,11 +106,11 @@ module ``12: List operations are so easy, you could make them yourself!`` =
     [<Test>]
     let ``07 Specified-function mapping, the hard way`` () =
         let map (f : 'a -> 'b) (xs : 'a list) : 'b list =
-            let rec innerF f xs out =
+            let rec innerF xs out =
               match xs with
-              | [] -> List.rev out
-              | i::_ -> f i::out 
-            innerF f xs []// write a map which applies f to each element
+              | [] -> out
+              | i::rest -> innerF rest ((f i)::out) 
+            innerF (List.rev xs ) []// write a map which applies f to each element
         map (fun x -> x+1) [9;8;7] |> should equal [10;9;8]
         map ((*) 2) [9;8;7] |> should equal [18;16;14]
         map (fun x -> sprintf "%.2f wut?" x)  [9.3; 1.22] |> should equal ["9.30 wut?"; "1.22 wut?"]
@@ -254,7 +254,11 @@ or something else), it's likely that you'll be able to use a fold.
     [<Test>]
     let ``16 Folding, the hard way`` () =
         let fold (f : 'a -> 'b -> 'a) (initialState : 'a) (xs : 'b list) : 'a =
-            __// write a function to do a fold.
+            let rec innerF xs out =
+                  match xs with
+                  | [] -> out
+                  | i::rest -> innerF rest (f out i)
+            innerF xs initialState// write a function to do a fold.
         fold (+) 0 [1;2;3;4] |> should equal 10
         fold (*) 2 [1;2;3;4] |> should equal 48
         fold (fun state item -> sprintf "%s %s" state item) "items:" ["dog"; "cat"; "bat"; "rat"]
@@ -289,13 +293,13 @@ or something else), it's likely that you'll be able to use a fold.
     [<Test>]
     let ``19 partition: splitting a list based on a criterion`` () =
         let partition (f : 'a -> bool) (xs : 'a list) : ('a list) * ('a list) =
-            let rec innerF xs out =
+            let rec innerF xs p s =
                 match xs with
-                | [] -> out 
+                | [] -> p,s
                 | i ::rest -> match f i with 
-                              | true ->  i :: innerF rest out
-                              | false -> innerF rest out             
-            innerF xs [],[] // Does this: https://msdn.microsoft.com/en-us/library/ee353782.aspx
+                              | true ->  innerF rest (i :: p) s
+                              | false -> innerF rest p (i :: s)             
+            innerF (List.rev xs) [] [] // Does this: https://msdn.microsoft.com/en-us/library/ee353782.aspx
         let a, b = partition (fun x -> x%2=0) [1;2;3;4;5;6;7;8;9;10]
         a |> should equal [2;4;6;8;10]
         b |> should equal [1;3;5;7;9]
@@ -310,7 +314,11 @@ or something else), it's likely that you'll be able to use a fold.
     [<Test>]
     let ``20 init: creating a list based on a size and a function`` () =
         let init (n : int) (f : int -> 'a) : 'a list =
-               let rec in // Does this: https://msdn.microsoft.com/en-us/library/ee370497.aspx
+               let rec inner i out = 
+                   match i < n with 
+                   |true -> inner (i+1) (f i :: out)
+                   |false -> List.rev out // Does this: https://msdn.microsoft.com/en-us/library/ee370497.aspx
+               inner 0 []
         init 10 (fun x -> x*2) |> should equal [0;2;4;6;8;10;12;14;16;18]
         init 4 (sprintf "(%d)") |> should equal ["(0)";"(1)";"(2)";"(3)"]
 
@@ -392,7 +400,11 @@ or something else), it's likely that you'll be able to use a fold.
     [<Test>]
     let ``24 mapi: like map, but passes along an item index as well`` () =
         let mapi (f : int -> 'a -> 'b) (xs : 'a list) : 'b list =
-             __  // Does this: https://msdn.microsoft.com/en-us/library/ee353425.aspx
+             let rec innerF id xs out =
+                 match xs with 
+                 |[] ->List.rev out
+                 | i :: rest -> innerF (id+1) rest (f id i :: out)
+             innerF 0 xs [] // Does this: https://msdn.microsoft.com/en-us/library/ee353425.aspx
         mapi (fun i x -> -i, x+1) [9;8;7;6] |> should equal [0,10; -1,9; -2,8; -3,7]
         let hailstone i t =
             match i%2 with
